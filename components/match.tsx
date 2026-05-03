@@ -1,7 +1,8 @@
 import MapPinIcon from '@/assets/icons/map-pin.svg';
 import { Match } from '@/types';
-import { StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import DefaultText from './default-text';
+import { useState } from 'react';
 
 function formatDate(value?: string) {
   if (!value) return '';
@@ -15,8 +16,14 @@ function formatDate(value?: string) {
 }
 
 export default function MatchComponent({ item }: { item: Match }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openYoutubeLink = async (url: string) => {
+    await Linking.openURL(url);
+  };
+
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container} onPress={() => setIsOpen(!isOpen)}>
       <View style={styles.header}>
         <View style={styles.competitionContainer}>
           <Text style={styles.competitionText}>{item?.competition_name}</Text>
@@ -49,7 +56,27 @@ export default function MatchComponent({ item }: { item: Match }) {
           <DefaultText text={`${item?.city_name ?? ''}, ${item?.country_name ?? ''}`} />
         </View>
       </View>
-    </View>
+
+      {isOpen && (
+        <View style={styles.notesAndYoutubeContainer}>
+          <View style={{ marginBottom: 8 }}>
+            <DefaultText text="Notes" />
+          </View>
+          <View>
+            <Text style={styles.noteText}>{item?.annotations}</Text>
+          </View>
+
+          {item?.youtube_link && (
+            <Pressable
+              style={styles.youtubePressable}
+              onPress={() => openYoutubeLink(item.youtube_link)}
+            >
+              <Text style={styles.youtubePressableText}>Watch highlights</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
+    </Pressable>
   );
 }
 
@@ -103,5 +130,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+  },
+  noteText: {
+    color: 'white',
+  },
+  notesAndYoutubeContainer: {
+    borderTopColor: '#8A95A2',
+    borderTopWidth: 1,
+    marginTop: 16,
+    paddingTop: 8,
+  },
+  youtubePressable: {
+    backgroundColor: '#00D964',
+    borderRadius: 16,
+    padding: 12,
+    marginTop: 16,
+  },
+  youtubePressableText: {
+    fontSize: 14,
   },
 });
