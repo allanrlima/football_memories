@@ -1,31 +1,58 @@
+import PlusIcon from '@/assets/icons/plus.svg';
 import DefaultText from '@/components/default-text';
 import Heading from '@/components/heading';
-import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import MatchComponent from '@/components/match';
+import { getMatches, getMatchStats } from '@/db/database';
+import type { Match } from '@/types';
+import { router, useFocusEffect } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useCallback, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const getDescriptionText = () => {
-  const matchesAttended: number = 0;
-  const countries: number = 0;
-
-  return `${matchesAttended.toString()} matches attended · ${countries.toString()} countries`;
-};
 
 const openModal = () => {
   router.push('/add-match-modal');
 };
 
 export default function HomeScreen() {
+  const db = useSQLiteContext();
+  const [stats, setStats] = useState({ matches: 0, countries: 0 });
+  const [matches, setMatches] = useState<Match[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      getMatchStats(db).then((next) => {
+        if (!cancelled) setStats(next);
+      });
+
+      getMatches(db).then((next) => {
+        if (!cancelled) setMatches(next);
+      });
+
+      return () => {
+        cancelled = true;
+      };
+    }, [db]),
+  );
+
   return (
     <SafeAreaView style={styles.safeAreaViwStyle}>
       <View>
         <DefaultText text="football memories" />
         <Heading text="My Matches" />
-        <DefaultText text={getDescriptionText()} />
+        <DefaultText text={`${stats.matches} matches attended · ${stats.countries} countries`} />
+        <View style={styles.verticalSpacer} />
+
+        <FlatList
+          data={matches}
+          renderItem={({ item }) => {
+            return <MatchComponent item={item} />;
+          }}
+        />
       </View>
       <Pressable style={styles.plusButton} onPress={openModal}>
-        {' '}
-        123
+        <PlusIcon width={28} height={28} color="#062611" />
       </Pressable>
     </SafeAreaView>
   );
@@ -44,7 +71,11 @@ const styles = StyleSheet.create({
     bottom: 16,
     right: 16,
     backgroundColor: '#00D964',
-    justifyContent: 'flex-end',
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'absolute',
+  },
+  verticalSpacer: {
+    paddingBottom: 32,
   },
 });

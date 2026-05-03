@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="38" fill="none" stroke="#00D964" stroke-width="3"></circle>
+  <circle cx="50" cy="50" r="3" fill="#00D964"></circle>
+  <path d="M50 12 L50 88 M12 50 L88 50" stroke="#00D964" stroke-width="2" opacity="0.4"></path>
+  <text x="50" y="56" text-anchor="middle" fill="#00D964" font-family="system-ui, sans-serif" font-weight="800" font-size="6" letter-spacing="0.5">FM</text>
+</svg>
