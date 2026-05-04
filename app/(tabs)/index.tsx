@@ -2,6 +2,7 @@ import PlusIcon from '@/assets/icons/plus.svg';
 import DefaultText from '@/components/default-text';
 import Heading from '@/components/heading';
 import MatchComponent from '@/components/match';
+import VerticalSpacer from '@/components/vertical-spacer';
 import { getMatches, getMatchStats } from '@/db/database';
 import type { Match } from '@/types';
 import { router, useFocusEffect } from 'expo-router';
@@ -18,6 +19,12 @@ export default function HomeScreen() {
   const db = useSQLiteContext();
   const [stats, setStats] = useState({ matches: 0, countries: 0 });
   const [matches, setMatches] = useState<Match[]>([]);
+  const [openMatchId, setOpenMatchId] = useState<number | null>(null);
+
+  const refresh = useCallback(() => {
+    getMatchStats(db).then(setStats);
+    getMatches(db).then(setMatches);
+  }, [db]);
 
   useFocusEffect(
     useCallback(() => {
@@ -39,16 +46,30 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeAreaViwStyle}>
       <View>
-        <DefaultText text="football memories" />
-        <Heading text="My Matches" />
-        <DefaultText text={`${stats.matches} matches attended · ${stats.countries} countries`} />
-        <View style={styles.verticalSpacer} />
-
         <FlatList
+          ListHeaderComponent={
+            <View>
+              <DefaultText text="football memories" />
+              <Heading text="My Matches" />
+              <DefaultText
+                text={`${stats.matches} matches attended · ${stats.countries} countries`}
+              />
+              <VerticalSpacer />
+            </View>
+          }
           data={matches}
           renderItem={({ item }) => {
-            return <MatchComponent item={item} />;
+            return (
+              <MatchComponent
+                item={item}
+                isOpen={openMatchId === item.id}
+                onToggle={() => setOpenMatchId((prev) => (prev === item.id ? null : item.id))}
+                closeAllMatchComponents={() => setOpenMatchId(null)}
+                onDeleted={refresh}
+              />
+            );
           }}
+          ListFooterComponent={<VerticalSpacer size={120} />}
         />
       </View>
       <Pressable style={styles.plusButton} onPress={openModal}>
@@ -74,8 +95,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-  },
-  verticalSpacer: {
-    paddingBottom: 32,
   },
 });

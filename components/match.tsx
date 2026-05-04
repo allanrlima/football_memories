@@ -1,8 +1,9 @@
 import MapPinIcon from '@/assets/icons/map-pin.svg';
+import { deleteMatch } from '@/db/database';
 import { Match } from '@/types';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSQLiteContext } from 'expo-sqlite';
+import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import DefaultText from './default-text';
-import { useState } from 'react';
 
 function formatDate(value?: string) {
   if (!value) return '';
@@ -15,21 +16,53 @@ function formatDate(value?: string) {
   });
 }
 
-export default function MatchComponent({ item }: { item: Match }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function MatchComponent({
+  item,
+  isOpen,
+  onToggle,
+  closeAllMatchComponents,
+  onDeleted,
+}: {
+  item: Match;
+  isOpen: boolean;
+  onToggle: () => void;
+  closeAllMatchComponents: () => void;
+  onDeleted: () => void;
+}) {
+  const db = useSQLiteContext();
 
   const openYoutubeLink = async (url: string) => {
     await Linking.openURL(url);
+
+    closeAllMatchComponents();
   };
 
+  const onDeleteMatch = () => {
+    Alert.alert('Are you sure you want to delete a match?', 'this will be erased forever', [
+      {
+        text: 'Yes',
+        style: 'destructive',
+        onPress: async () => {
+          await deleteMatch(db, item.id);
+          onDeleted();
+        },
+      },
+      {
+        text: 'No',
+      },
+    ]);
+  };
+
+  const youtubeLink = item?.youtube_link;
+
   return (
-    <Pressable style={styles.container} onPress={() => setIsOpen(!isOpen)}>
+    <Pressable style={styles.container} onPress={onToggle}>
       <View style={styles.header}>
         <View style={styles.competitionContainer}>
           <Text style={styles.competitionText}>{item?.competition_name}</Text>
         </View>
         <View>
-          <DefaultText text={formatDate(item?.created_at)} />
+          <DefaultText text={item?.match_date || ''} />
         </View>
       </View>
 
@@ -66,14 +99,19 @@ export default function MatchComponent({ item }: { item: Match }) {
             <Text style={styles.noteText}>{item?.annotations}</Text>
           </View>
 
-          {item?.youtube_link && (
-            <Pressable
-              style={styles.youtubePressable}
-              onPress={() => openYoutubeLink(item.youtube_link)}
-            >
-              <Text style={styles.youtubePressableText}>Watch highlights</Text>
+          <View style={styles.youtubeAndDeleteContainer}>
+            {youtubeLink && (
+              <Pressable
+                style={styles.youtubePressable}
+                onPress={() => openYoutubeLink(youtubeLink)}
+              >
+                <Text style={styles.youtubePressableText}>Watch highlights</Text>
+              </Pressable>
+            )}
+            <Pressable style={styles.deletePressable} onPress={onDeleteMatch}>
+              <Text style={styles.deletePressableText}>Delete Match</Text>
             </Pressable>
-          )}
+          </View>
         </View>
       )}
     </Pressable>
@@ -140,6 +178,10 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 8,
   },
+  youtubeAndDeleteContainer: {
+    flexDirection: 'row',
+    gap: 16,
+  },
   youtubePressable: {
     backgroundColor: '#00D964',
     borderRadius: 16,
@@ -147,6 +189,15 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   youtubePressableText: {
+    fontSize: 14,
+  },
+  deletePressable: {
+    backgroundColor: 'red',
+    borderRadius: 16,
+    padding: 12,
+    marginTop: 16,
+  },
+  deletePressableText: {
     fontSize: 14,
   },
 });

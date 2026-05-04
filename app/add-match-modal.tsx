@@ -148,10 +148,7 @@ export default function AddMatchModal() {
                 };
                 return (
                   <View>
-                    <Pressable
-                      onPress={() => setShowDatePicker(true)}
-                      style={styles.dateInput}
-                    >
+                    <Pressable onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
                       <Text style={value ? styles.dateText : styles.datePlaceholder}>
                         {value || 'YYYY-MM-DD'}
                       </Text>

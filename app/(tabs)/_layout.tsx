@@ -1,34 +1,48 @@
+import BarChartIcon from '@/assets/icons/bar-chart3.svg';
+import BriefcaseIcon from '@/assets/icons/briefcase.svg';
+import SettingsIcon from '@/assets/icons/settings.svg';
+import { HapticTab } from '@/components/haptic-tab';
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: 'rgb(0, 217, 100)',
+        tabBarInactiveTintColor: '#8A95A2',
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          letterSpacing: 1,
+        },
+        tabBarStyle: {
+          backgroundColor: '#171d24',
+          borderTopWidth: 0,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'MATCHES',
+          tabBarIcon: ({ color }) => <BriefcaseIcon width={22} height={22} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="stats"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'STATS',
+          tabBarIcon: ({ color }) => <BarChartIcon width={22} height={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="config"
+        options={{
+          title: 'CONFIG',
+          tabBarIcon: ({ color }) => <SettingsIcon width={22} height={22} color={color} />,
         }}
       />
     </Tabs>

@@ -32,3 +32,13 @@ export type MatchStats = {
   matches: number;
   countries: number;
 };
+
+export type LifetimeStats = {
+  matches: number;
+  seasons: number;
+  since: string | null;
+  topStadium: { name: string; visits: number } | null;
+  topTeam: { name: string; matches: number } | null;
+  goals: { total: number; perMatch: number };
+  countries: number;
+};

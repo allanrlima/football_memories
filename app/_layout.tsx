@@ -25,7 +25,7 @@ export default function RootLayout() {
             options={{ presentation: 'modal', headerShown: false }}
           />
         </Stack>
-        <StatusBar style="auto" />
+        <StatusBar style="light" />
       </SQLiteProvider>
     </ThemeProvider>
   );
