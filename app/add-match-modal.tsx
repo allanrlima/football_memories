@@ -17,9 +17,10 @@ import {
 import { z } from 'zod';
 
 import DefaultText from '@/components/default-text';
+import Heading from '@/components/heading';
 import Input from '@/components/input';
 import SuccessButton from '@/components/success-button';
-import { ThemedText } from '@/components/themed-text';
+import { colors } from '@/constants/theme';
 import { addMatch } from '@/db/database';
 
 const formatDate = (date: Date) => {
@@ -35,17 +36,34 @@ const parseDate = (value: string) => {
   return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
 };
 
+const scoreField = z.string().regex(/^\d{0,3}$/, 'Score must be a number (0-999)');
+
+const dateField = z.string().regex(/^(\d{4}-\d{2}-\d{2})?$/, 'Use YYYY-MM-DD');
+
+const urlField = z.string().refine(
+  (v) => {
+    if (v === '') return true;
+    try {
+      const u = new URL(v);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  },
+  { message: 'Must be a valid http(s) URL' },
+);
+
 export const formSchema = z.object({
   homeTeamName: z.string().min(3, 'Name too short'),
-  homeTeamScore: z.string(),
+  homeTeamScore: scoreField,
   awayTeamName: z.string().min(3, 'Name too short'),
-  awayTeamScore: z.string(),
-  matchDate: z.string(),
+  awayTeamScore: scoreField,
+  matchDate: dateField,
   stadiumName: z.string(),
   competitionName: z.string(),
   cityName: z.string(),
   countryName: z.string(),
-  youtubeLink: z.string(),
+  youtubeLink: urlField,
   annotations: z.string(),
 });
 
@@ -95,7 +113,7 @@ export default function AddMatchModal() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <ThemedText type="title">Add Match</ThemedText>
+        <Heading text="Add Match" />
         <View style={styles.formContainer}>
           <View style={styles.teamsContainer}>
             <DefaultText text="Home Team" />
@@ -159,7 +177,7 @@ export default function AddMatchModal() {
                         mode="date"
                         display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                         onChange={handleChange}
-                        textColor="#ffffff"
+                        textColor={colors.text.primary}
                         themeVariant="dark"
                       />
                     )}
@@ -245,7 +263,7 @@ export default function AddMatchModal() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-    backgroundColor: '#0F1419',
+    backgroundColor: colors.bg.base,
   },
   formContainer: {
     width: '100%',
@@ -261,7 +279,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   teamsContainer: {
-    backgroundColor: '#171d24',
+    backgroundColor: colors.bg.card,
     width: '100%',
     padding: 16,
     borderRadius: 18,
@@ -279,18 +297,18 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   dateInput: {
-    backgroundColor: '#0a0e13',
+    backgroundColor: colors.bg.input,
     padding: 12,
     borderRadius: 12,
   },
   dateText: {
-    color: '#ffffff',
+    color: colors.text.primary,
   },
   datePlaceholder: {
-    color: '#1B2D37',
+    color: colors.text.placeholder,
   },
   error: {
-    color: '#ff6b6b',
+    color: colors.text.error,
     fontSize: 12,
     marginTop: 4,
   },

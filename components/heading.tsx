@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { colors } from '@/constants/theme';
+
 type HeadingProps = {
   text: string;
 };
@@ -14,7 +16,7 @@ export default function Heading({ text }: HeadingProps) {
 
 const styles = StyleSheet.create({
   textContainer: {
-    color: '#FFFFFF',
+    color: colors.text.primary,
     fontSize: 32,
   },
 });

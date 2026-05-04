@@ -1,13 +1,13 @@
-import ExternalLinkIcon from '@/assets/icons/external-link.svg';
 import GlobeIcon from '@/assets/icons/globe2.svg';
 import GoalIcon from '@/assets/icons/goal.svg';
 import MapPinIcon from '@/assets/icons/map-pin.svg';
 import PitchDecorationIcon from '@/assets/icons/pitch-decoration.svg';
 import TrophyIcon from '@/assets/icons/trophy.svg';
 import DefaultText from '@/components/default-text';
-import { ExternalLink } from '@/components/external-link';
 import Heading from '@/components/heading';
+import StudioFooter from '@/components/studio-footer';
 import VerticalSpacer from '@/components/vertical-spacer';
+import { colors } from '@/constants/theme';
 import { getLifetimeStats } from '@/db/database';
 import type { LifetimeStats } from '@/types';
 import { useFocusEffect } from 'expo-router';
@@ -82,8 +82,8 @@ export default function StatsScreen() {
 
         <View style={styles.grid}>
           <StatCard
-            icon={<MapPinIcon width={18} height={18} color="#FF6B81" />}
-            iconBg="#3A1822"
+            icon={<MapPinIcon width={18} height={18} color={colors.accent.pink} />}
+            iconBg={colors.accent.pinkBg}
             value={stats.topStadium?.name ?? '—'}
             caption={
               stats.topStadium
@@ -92,8 +92,8 @@ export default function StatsScreen() {
             }
           />
           <StatCard
-            icon={<TrophyIcon width={18} height={18} color="#FF6B81" />}
-            iconBg="#3A1822"
+            icon={<TrophyIcon width={18} height={18} color={colors.accent.pink} />}
+            iconBg={colors.accent.pinkBg}
             value={stats.topTeam?.name ?? '—'}
             caption={
               stats.topTeam
@@ -102,14 +102,14 @@ export default function StatsScreen() {
             }
           />
           <StatCard
-            icon={<GoalIcon width={18} height={18} color="#4ee5ff" />}
-            iconBg="#0E2A33"
+            icon={<GoalIcon width={18} height={18} color={colors.accent.cyan} />}
+            iconBg={colors.accent.cyanBg}
             value={String(stats.goals.total)}
             caption={`Goals witnessed · ${stats.goals.perMatch.toFixed(2)} / match`}
           />
           <StatCard
-            icon={<GlobeIcon width={18} height={18} color="#4ee5ff" />}
-            iconBg="#0E2A33"
+            icon={<GlobeIcon width={18} height={18} color={colors.accent.cyan} />}
+            iconBg={colors.accent.cyanBg}
             value={String(stats.countries)}
             caption={`${countriesLabel} · visited`}
           />
@@ -117,10 +117,7 @@ export default function StatsScreen() {
 
         <VerticalSpacer size={32} />
 
-        <ExternalLink href="https://pronobisgamestudio.com" style={styles.footerLink}>
-          <Text style={styles.footerText}>Made by Pronobis Game Studio</Text>
-          <ExternalLinkIcon width={14} height={14} color="#8A95A2" />
-        </ExternalLink>
+        <StudioFooter />
 
         <VerticalSpacer size={120} />
       </ScrollView>
@@ -152,13 +149,13 @@ function StatCard({
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#0F1419',
+    backgroundColor: colors.bg.base,
     padding: 16,
     flex: 1,
   },
   heroCard: {
-    backgroundColor: '#101e17',
-    borderColor: '#00D964',
+    backgroundColor: colors.bg.heroGreen,
+    borderColor: colors.accent.green,
     borderWidth: 1,
     borderRadius: 16,
     padding: 20,
@@ -173,17 +170,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   heroValue: {
-    color: '#FFFFFF',
+    color: colors.text.primary,
     fontSize: 64,
     fontWeight: 'bold',
     lineHeight: 70,
   },
   heroSubtitle: {
-    color: '#8A95A2',
+    color: colors.text.muted,
     fontSize: 13,
   },
   heroSubtitleStrong: {
-    color: '#FFFFFF',
+    color: colors.text.primary,
     fontWeight: 'bold',
   },
   grid: {
@@ -194,7 +191,7 @@ const styles = StyleSheet.create({
   statCard: {
     flexBasis: '48%',
     flexGrow: 1,
-    backgroundColor: '#171d24',
+    backgroundColor: colors.bg.card,
     borderRadius: 16,
     padding: 16,
     gap: 10,
@@ -207,22 +204,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   statValue: {
-    color: '#FFFFFF',
+    color: colors.text.primary,
     fontWeight: 'bold',
     fontSize: 18,
   },
   statCaption: {
-    color: '#8A95A2',
+    color: colors.text.muted,
     fontSize: 12,
-  },
-  footerLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  footerText: {
-    color: '#8A95A2',
-    fontSize: 13,
   },
 });

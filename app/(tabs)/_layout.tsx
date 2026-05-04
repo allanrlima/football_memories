@@ -2,6 +2,7 @@ import BarChartIcon from '@/assets/icons/bar-chart3.svg';
 import BriefcaseIcon from '@/assets/icons/briefcase.svg';
 import SettingsIcon from '@/assets/icons/settings.svg';
 import { HapticTab } from '@/components/haptic-tab';
+import { colors } from '@/constants/theme';
 import { Tabs } from 'expo-router';
 import React from 'react';
 
@@ -9,8 +10,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'rgb(0, 217, 100)',
-        tabBarInactiveTintColor: '#8A95A2',
+        tabBarActiveTintColor: colors.accent.green,
+        tabBarInactiveTintColor: colors.text.muted,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarLabelStyle: {
@@ -19,7 +20,7 @@ export default function TabLayout() {
           letterSpacing: 1,
         },
         tabBarStyle: {
-          backgroundColor: '#171d24',
+          backgroundColor: colors.bg.card,
           borderTopWidth: 0,
         },
       }}

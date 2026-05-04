@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { colors } from '@/constants/theme';
+
 type DefaultTextProps = {
   text: string;
   center?: boolean;
@@ -24,7 +26,7 @@ export default function DefaultText({ text, center, marginTop }: DefaultTextProp
 
 const styles = StyleSheet.create({
   textContainer: {
-    color: '#8A95A2',
+    color: colors.text.muted,
     fontSize: 12,
   },
   center: {

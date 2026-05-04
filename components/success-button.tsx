@@ -1,5 +1,7 @@
 import { Button, GestureResponderEvent, StyleSheet, View } from 'react-native';
 
+import { colors } from '@/constants/theme';
+
 type SuccessButtonProps = {
   title: string;
   onPress?: ((event: GestureResponderEvent) => void) | undefined;
@@ -8,14 +10,14 @@ type SuccessButtonProps = {
 export default function SuccessButton({ title, onPress }: SuccessButtonProps) {
   return (
     <View style={styles.container}>
-      <Button title={title} onPress={onPress} color={'#062611'} />
+      <Button title={title} onPress={onPress} color={colors.text.onAccent} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#00d964',
+    backgroundColor: colors.accent.green,
     borderRadius: 12,
     width: '100%',
   },

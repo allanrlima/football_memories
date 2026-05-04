@@ -95,9 +95,10 @@ function parseCsv(text: string): string[][] {
 
 export function parseMatchesCsv(text: string): { rows: MatchInput[]; skipped: number } {
   const all = parseCsv(text);
-  if (all.length === 0) return { rows: [], skipped: 0 };
+  const headerRow = all[0];
+  if (!headerRow) return { rows: [], skipped: 0 };
 
-  const header = all[0].map((h) => h.trim().toLowerCase());
+  const header = headerRow.map((h) => h.trim().toLowerCase());
   const idx = Object.fromEntries(HEADERS.map((h) => [h, header.indexOf(h)])) as Record<
     Header,
     number
@@ -111,6 +112,7 @@ export function parseMatchesCsv(text: string): { rows: MatchInput[]; skipped: nu
   let skipped = 0;
   for (let i = 1; i < all.length; i++) {
     const r = all[i];
+    if (!r) continue;
     const get = (key: Header) => (idx[key] >= 0 ? (r[idx[key]] ?? '') : '');
     const home = get('home_team_name').trim();
     const away = get('away_team_name').trim();

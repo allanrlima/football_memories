@@ -9,6 +9,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { colors } from '@/constants/theme';
+
 type InputProps<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
@@ -35,7 +37,7 @@ export default function Input<T extends FieldValues>({
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            placeholderTextColor="#1B2D37"
+            placeholderTextColor={colors.text.placeholder}
             style={[styles.input, style]}
             {...rest}
           />
@@ -48,13 +50,13 @@ export default function Input<T extends FieldValues>({
 
 const styles = StyleSheet.create({
   input: {
-    backgroundColor: '#0a0e13',
+    backgroundColor: colors.bg.input,
     padding: 12,
-    color: '#ffffff',
+    color: colors.text.primary,
     borderRadius: 12,
   },
   error: {
-    color: '#ff6b6b',
+    color: colors.text.error,
     fontSize: 12,
     marginTop: 4,
   },

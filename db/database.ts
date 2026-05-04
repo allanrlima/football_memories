@@ -21,6 +21,12 @@ export async function initDatabase(db: SQLiteDatabase) {
       annotations TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
+    CREATE INDEX IF NOT EXISTS idx_matches_created_at ON matches(created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_matches_match_date ON matches(match_date);
+    CREATE INDEX IF NOT EXISTS idx_matches_country_name ON matches(country_name);
+    CREATE INDEX IF NOT EXISTS idx_matches_stadium_name ON matches(stadium_name);
+    CREATE INDEX IF NOT EXISTS idx_matches_home_team_name ON matches(home_team_name);
+    CREATE INDEX IF NOT EXISTS idx_matches_away_team_name ON matches(away_team_name);
   `);
 }
 
@@ -55,8 +61,12 @@ export async function getLifetimeStats(db: SQLiteDatabase): Promise<LifetimeStat
          END
        ) AS seasons,
        SUM(
-         CAST(NULLIF(home_team_score, '') AS INTEGER)
-         + CAST(NULLIF(away_team_score, '') AS INTEGER)
+         CASE
+           WHEN NULLIF(home_team_score, '') IS NOT NULL
+            AND NULLIF(away_team_score, '') IS NOT NULL
+           THEN CAST(home_team_score AS INTEGER) + CAST(away_team_score AS INTEGER)
+           ELSE 0
+         END
        ) AS goals,
        SUM(
          CASE

@@ -4,12 +4,14 @@ import SettingsIcon from '@/assets/icons/settings.svg';
 import UploadIcon from '@/assets/icons/upload.svg';
 import DefaultText from '@/components/default-text';
 import Heading from '@/components/heading';
+import StudioFooter from '@/components/studio-footer';
 import VerticalSpacer from '@/components/vertical-spacer';
+import { colors } from '@/constants/theme';
 import { getMatches, importMatches } from '@/db/database';
 import { matchesToCsv, parseMatchesCsv } from '@/lib/csv';
 import { STUDIO_DATA } from '@/lib/steam-games';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
@@ -38,15 +40,14 @@ export default function ConfigScreen() {
       const csv = matchesToCsv(matches);
       const stamp = new Date().toISOString().slice(0, 10);
       const filename = `football-memories-${stamp}.csv`;
-      const uri = (FileSystem.cacheDirectory ?? '') + filename;
-      await FileSystem.writeAsStringAsync(uri, csv, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      const file = new File(Paths.cache, filename);
+      file.create({ overwrite: true });
+      file.write(csv);
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert('Sharing unavailable', 'This device does not support sharing files.');
         return;
       }
-      await Sharing.shareAsync(uri, {
+      await Sharing.shareAsync(file.uri, {
         mimeType: 'text/csv',
         UTI: 'public.comma-separated-values-text',
         dialogTitle: 'Export matches',
@@ -72,10 +73,9 @@ export default function ConfigScreen() {
         multiple: false,
       });
       if (result.canceled) return;
-      const file = result.assets[0];
-      const text = await FileSystem.readAsStringAsync(file.uri, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      const picked = result.assets[0];
+      if (!picked) return;
+      const text = await new File(picked.uri).text();
       const { rows, skipped } = parseMatchesCsv(text);
       const inserted = await importMatches(db, rows);
       Alert.alert(
@@ -97,17 +97,17 @@ export default function ConfigScreen() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <SettingsIcon width={14} height={14} color="#8A95A2" />
+            <SettingsIcon width={14} height={14} color={colors.text.muted} />
             <DefaultText text="Match Data" />
           </View>
 
           <View style={styles.dataRow}>
             <Pressable style={styles.dataCard} onPress={handleExport} disabled={busy !== 'idle'}>
-              <View style={[styles.dataIconBadge, { backgroundColor: 'rgba(0, 217, 100, 0.15)' }]}>
+              <View style={[styles.dataIconBadge, { backgroundColor: colors.accent.greenSoft }]}>
                 {busy === 'export' ? (
-                  <ActivityIndicator color="#00D964" />
+                  <ActivityIndicator color={colors.accent.green} />
                 ) : (
-                  <DownloadIcon width={20} height={20} color="#00D964" />
+                  <DownloadIcon width={20} height={20} color={colors.accent.green} />
                 )}
               </View>
               <Text style={styles.dataCardTitle}>Export CSV</Text>
@@ -115,11 +115,11 @@ export default function ConfigScreen() {
             </Pressable>
 
             <Pressable style={styles.dataCard} onPress={handleImport} disabled={busy !== 'idle'}>
-              <View style={[styles.dataIconBadge, { backgroundColor: 'rgba(14, 165, 233, 0.15)' }]}>
+              <View style={[styles.dataIconBadge, { backgroundColor: colors.accent.blueSoft }]}>
                 {busy === 'import' ? (
-                  <ActivityIndicator color="#0EA5E9" />
+                  <ActivityIndicator color={colors.accent.blue} />
                 ) : (
-                  <UploadIcon width={20} height={20} color="#0EA5E9" />
+                  <UploadIcon width={20} height={20} color={colors.accent.blue} />
                 )}
               </View>
               <Text style={styles.dataCardTitle}>Import CSV</Text>
@@ -156,11 +156,15 @@ export default function ConfigScreen() {
                   <Text style={styles.gameTitle}>{game.title}</Text>
                   <Text style={styles.gameGenre}>{game.genre}</Text>
                 </View>
-                <ExternalLinkIcon width={18} height={18} color="#8A95A2" />
+                <ExternalLinkIcon width={18} height={18} color={colors.text.muted} />
               </Pressable>
             ))}
           </View>
         </View>
+
+        <VerticalSpacer size={32} />
+
+        <StudioFooter />
       </ScrollView>
     </SafeAreaView>
   );
@@ -168,7 +172,7 @@ export default function ConfigScreen() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#0F1419',
+    backgroundColor: colors.bg.base,
     flex: 1,
   },
   scrollContent: {
@@ -177,11 +181,11 @@ const styles = StyleSheet.create({
   },
   section: {
     marginTop: 20,
-    backgroundColor: '#171d24',
+    backgroundColor: colors.bg.card,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#1F2730',
+    borderColor: colors.border.subtle,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -195,11 +199,11 @@ const styles = StyleSheet.create({
   },
   dataCard: {
     flex: 1,
-    backgroundColor: '#0F1419',
+    backgroundColor: colors.bg.base,
     borderRadius: 12,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#1F2730',
+    borderColor: colors.border.subtle,
   },
   dataIconBadge: {
     width: 36,
@@ -210,23 +214,23 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   dataCardTitle: {
-    color: '#FFFFFF',
+    color: colors.text.primary,
     fontSize: 15,
     fontWeight: '600',
   },
   dataCardSubtitle: {
-    color: '#8A95A2',
+    color: colors.text.muted,
     fontSize: 12,
     marginTop: 2,
   },
   gameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F1419',
+    backgroundColor: colors.bg.base,
     borderRadius: 12,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#1F2730',
+    borderColor: colors.border.subtle,
     gap: 12,
   },
   gameTile: {
@@ -246,7 +250,7 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   gameTileText: {
-    color: '#FFFFFF',
+    color: colors.text.primary,
     fontWeight: '700',
     fontSize: 16,
   },
@@ -254,12 +258,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gameTitle: {
-    color: '#FFFFFF',
+    color: colors.text.primary,
     fontSize: 15,
     fontWeight: '600',
   },
   gameGenre: {
-    color: '#8A95A2',
+    color: colors.text.muted,
     fontSize: 12,
     marginTop: 2,
   },

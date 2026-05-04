@@ -2,7 +2,9 @@ import PlusIcon from '@/assets/icons/plus.svg';
 import DefaultText from '@/components/default-text';
 import Heading from '@/components/heading';
 import MatchComponent from '@/components/match';
+import StudioFooter from '@/components/studio-footer';
 import VerticalSpacer from '@/components/vertical-spacer';
+import { colors } from '@/constants/theme';
 import { getMatches, getMatchStats } from '@/db/database';
 import type { Match } from '@/types';
 import { router, useFocusEffect } from 'expo-router';
@@ -44,7 +46,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safeAreaViwStyle}>
+    <SafeAreaView style={styles.safeAreaViewStyle}>
       <View>
         <FlatList
           ListHeaderComponent={
@@ -58,6 +60,7 @@ export default function HomeScreen() {
             </View>
           }
           data={matches}
+          keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => {
             return (
               <MatchComponent
@@ -69,19 +72,25 @@ export default function HomeScreen() {
               />
             );
           }}
-          ListFooterComponent={<VerticalSpacer size={120} />}
+          ListFooterComponent={
+            <View>
+              <VerticalSpacer size={32} />
+              <StudioFooter />
+              <VerticalSpacer size={120} />
+            </View>
+          }
         />
       </View>
       <Pressable style={styles.plusButton} onPress={openModal}>
-        <PlusIcon width={28} height={28} color="#062611" />
+        <PlusIcon width={28} height={28} color={colors.text.onAccent} />
       </Pressable>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeAreaViwStyle: {
-    backgroundColor: '#0F1419',
+  safeAreaViewStyle: {
+    backgroundColor: colors.bg.base,
     padding: 16,
     flex: 1,
   },
@@ -91,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 90,
     bottom: 16,
     right: 16,
-    backgroundColor: '#00D964',
+    backgroundColor: colors.accent.green,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
