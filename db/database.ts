@@ -154,6 +154,36 @@ export async function addMatch(db: SQLiteDatabase, m: MatchInput) {
   );
 }
 
+export async function updateMatch(db: SQLiteDatabase, id: number, m: MatchInput) {
+  return db.runAsync(
+    `UPDATE matches SET
+       home_team_name = ?, home_team_score = ?,
+       away_team_name = ?, away_team_score = ?,
+       match_date = ?, stadium_name = ?, competition_name = ?,
+       city_name = ?, country_name = ?, youtube_link = ?, annotations = ?
+     WHERE id = ?`,
+    [
+      m.homeTeamName,
+      m.homeTeamScore,
+      m.awayTeamName,
+      m.awayTeamScore,
+      m.matchDate,
+      m.stadiumName,
+      m.competitionName,
+      m.cityName,
+      m.countryName,
+      m.youtubeLink,
+      m.annotations,
+      id,
+    ],
+  );
+}
+
+export async function getMatchById(db: SQLiteDatabase, id: number): Promise<Match | null> {
+  const row = await db.getFirstAsync<Match>(`SELECT * FROM matches WHERE id = ?`, [id]);
+  return row ?? null;
+}
+
 export async function deleteMatch(db: SQLiteDatabase, id: number) {
   return db.runAsync(`DELETE FROM matches WHERE id = ?`, [id]);
 }

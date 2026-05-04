@@ -2,6 +2,7 @@ import MapPinIcon from '@/assets/icons/map-pin.svg';
 import { colors } from '@/constants/theme';
 import { deleteMatch } from '@/db/database';
 import { Match } from '@/types';
+import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import DefaultText from './default-text';
@@ -54,6 +55,11 @@ export default function MatchComponent({
         text: 'No',
       },
     ]);
+  };
+
+  const onEditMatch = () => {
+    closeAllMatchComponents();
+    router.push({ pathname: '/edit-match-modal', params: { id: String(item.id) } });
   };
 
   const youtubeLink = item?.youtube_link;
@@ -113,6 +119,9 @@ export default function MatchComponent({
                 <Text style={styles.youtubePressableText}>Watch highlights</Text>
               </Pressable>
             )}
+            <Pressable style={styles.editPressable} onPress={onEditMatch}>
+              <Text style={styles.editPressableText}>Edit Match</Text>
+            </Pressable>
             <Pressable style={styles.deletePressable} onPress={onDeleteMatch}>
               <Text style={styles.deletePressableText}>Delete Match</Text>
             </Pressable>
@@ -203,6 +212,15 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   deletePressableText: {
+    fontSize: 14,
+  },
+  editPressable: {
+    backgroundColor: colors.accent.blue,
+    borderRadius: 16,
+    padding: 12,
+    marginTop: 16,
+  },
+  editPressableText: {
     fontSize: 14,
   },
 });

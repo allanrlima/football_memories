@@ -18,6 +18,10 @@ export default function RootLayout() {
           name="add-match-modal"
           options={{ presentation: 'modal', headerShown: false }}
         />
+        <Stack.Screen
+          name="edit-match-modal"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
       </Stack>
       <StatusBar style="light" />
     </SQLiteProvider>
